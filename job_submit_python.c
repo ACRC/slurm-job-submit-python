@@ -8,6 +8,7 @@
 #include "src/common/xmalloc.h"
 #include "src/slurmctld/slurmctld.h"
 
+#include <stdbool.h>
 #include <time.h>
 
 const char plugin_name[]="Job submit Python plugin";
@@ -257,17 +258,45 @@ void python_dict_to_environment(PyObject* obj, uint32_t* num_strings_p, char*** 
 
 	if (!PyMapping_Check(obj))
 	{
-		//TODO
+		//TODO environment is not a mapping
 	}
 
-	//char* eq = xstrchr(*str_list_p[i], '=');
-	//size_t eq_position = (size_t)(eq - str_list[i]);
-	//PyObject* str_val = PyUnicode_FromString(str_list[i] + eq_position + 1);
-	// find env var name in orig
-	// is it in the python dict?
-	// if not, remove from orig by clearing memory and nulling
-	// if it is, we'll check the vaue later
-	// We then need to fill the gaps and shrink the orig array
+	for (int i = 0; i < (*num_strings_p); ++i)
+	{
+		char* eq = xstrchr(*str_list_p[i], '=');
+		size_t eq_position = (size_t)(eq - *str_list_p[i]);
+		char* key = xstrndup(*str_list_p[i], eq_position);
+		char* value = *str_list_p[i] + eq_position + 1;
+		if (PyMapping_HasKeyString(obj, key))
+		{
+			// The key is still there but we must check if the value has been changed
+			PyObject* p_value = PyMapping_GetItemString(obj, key);
+			PyMapping_DelItemString(obj, key);
+			if (!PyUnicode_Check(p_value))
+			{
+				// TODO error on not string type
+			}
+			bool value_changed = PyUnicode_CompareWithASCIIString(p_value, value) != 0;
+			if (value_changed)
+			{
+				xfree((*str_list_p)[i]);
+				*str_list_p[i] = xstrdup_printf("%s=%s", key, PyUnicode_AsUTF8(p_value));
+			}
+			Py_DECREF(p_value);
+		}
+		else
+		{
+			// Key has been removed by the user so remove it from the job descriptor
+			xfree((*str_list_p)[i]);
+			(*str_list_p)[i] = NULL;
+		}
+	}
+
+	// TODO If we have removed entries from str_list_p, we must defragment it to move the gaps to the end
+
+	// TODO resize str_list_p to the original size of the dict with realloc
+
+	// TODO Slot in the remaining elements of the dict into the string list
 }
 
 void python_to_char_star_star(PyObject* obj, uint32_t* num_strings_p, char*** str_list_p)
@@ -351,7 +380,11 @@ do { \
 } while (0)
 #define retrieve_environment_dict(job_desc, dict, name, count) \
 do { \
-	/*TODO*/\
+	PyObject* o = PyDict_GetItemString(dict, #name); \
+	if (o != NULL) { \
+		python_dict_to_environment(o, &job_desc->count, &job_desc->name); \
+		PyDict_DelItemString(dict, #name); \
+	} \
 } while (0)
 #define retrieve_int(job_desc, dict, name, noval) \
 do { \
