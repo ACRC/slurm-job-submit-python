@@ -484,7 +484,6 @@ void retrieve_job_desc_dict(struct job_descriptor *job_desc, PyObject* pJobDesc)
 	retrieve_char_star(job_desc, pJobDesc, dependency);
 	retrieve_time_t(job_desc, pJobDesc, end_time);
 	retrieve_environment_dict(job_desc, pJobDesc, environment, env_size);
-	retrieve_uint32_t(job_desc, pJobDesc, env_size);
 	retrieve_char_star(job_desc, pJobDesc, extra);
 	retrieve_char_star(job_desc, pJobDesc, exc_nodes);
 	retrieve_char_star(job_desc, pJobDesc, features);
@@ -563,7 +562,6 @@ void retrieve_job_desc_dict(struct job_descriptor *job_desc, PyObject* pJobDesc)
 	retrieve_uint16_t(job_desc, pJobDesc, x11);
 	retrieve_char_star(job_desc, pJobDesc, x11_magic_cookie);
 	retrieve_uint16_t(job_desc, pJobDesc, x11_target_port);
-
 }
 
 PyObject* load_script()
