@@ -268,6 +268,28 @@ void clear_char_star_star(uint32_t* num_strings_p, char*** str_list_p)
 	*num_strings_p = 0;
 }
 
+
+// Given an array of strings, move any NULL strings to the end
+void defragment_array(uint32_t num_strings, char** str_list)
+{
+	for (int empty_finder = 0; empty_finder < num_strings; ++empty_finder)
+	{
+		if (str_list[empty_finder] == NULL)
+		{
+			for (int back_pointer = num_strings-1; back_pointer > empty_finder; --back_pointer)
+			{
+				if (str_list[back_pointer] != NULL)
+				{
+					info("Doing a swap");
+					str_list[empty_finder] = str_list[back_pointer];
+					str_list[back_pointer] = NULL;
+					break;
+				}
+			}
+		}
+	}
+}
+
 void python_dict_to_environment(PyObject* obj, uint32_t* num_strings_p, char*** str_list_p)
 {
 	if (obj == Py_None)
@@ -281,28 +303,28 @@ void python_dict_to_environment(PyObject* obj, uint32_t* num_strings_p, char*** 
 		//TODO environment is not a mapping
 	}
 
+	uint32_t p_length = PyMapping_Length(obj);
+
 	for (int i = 0; i < (*num_strings_p); ++i)
 	{
-		char* eq = xstrchr(*str_list_p[i], '=');
-		size_t eq_position = (size_t)(eq - *str_list_p[i]);
-		char* key = xstrndup(*str_list_p[i], eq_position);
-		char* value = *str_list_p[i] + eq_position + 1;
+		char* eq = xstrchr((*str_list_p)[i], '=');
+		size_t eq_position = (size_t)(eq - (*str_list_p)[i]);
+		char* key = xstrndup((*str_list_p)[i], eq_position);
+		char* value = (*str_list_p)[i] + eq_position + 1;
 		if (PyMapping_HasKeyString(obj, key))
 		{
 			// The key is still there but we must check if the value has been changed
 			PyObject* p_value = PyMapping_GetItemString(obj, key);
 			PyMapping_DelItemString(obj, key);
-			if (!PyUnicode_Check(p_value))
-			{
-				// TODO error on not string type
-			}
-			bool value_changed = PyUnicode_CompareWithASCIIString(p_value, value) != 0;
+			PyObject* p_str = PyObject_Str(p_value);
+			Py_DECREF(p_value);
+			bool value_changed = PyUnicode_CompareWithASCIIString(p_str, value) != 0;
 			if (value_changed)
 			{
 				xfree((*str_list_p)[i]);
-				*str_list_p[i] = xstrdup_printf("%s=%s", key, PyUnicode_AsUTF8(p_value));
+				(*str_list_p)[i] = xstrdup_printf("%s=%s", key, PyUnicode_AsUTF8(p_str));
 			}
-			Py_DECREF(p_value);
+			Py_DECREF(p_str);
 		}
 		else
 		{
@@ -312,11 +334,28 @@ void python_dict_to_environment(PyObject* obj, uint32_t* num_strings_p, char*** 
 		}
 	}
 
-	// TODO If we have removed entries from str_list_p, we must defragment it to move the gaps to the end
+	// If we have removed entries from str_list_p, we must defragment it to move the gaps to the end
+	defragment_array(*num_strings_p, *str_list_p);
 
-	// TODO resize str_list_p to the original size of the dict with realloc
+	// resize str_list_p to the original size of the dict with realloc
+	*num_strings_p = p_length;
+	*str_list_p = xrealloc(*str_list_p, (*num_strings_p)*sizeof(char*));
 
-	// TODO Slot in the remaining elements of the dict into the string list
+	// Slot in the remaining elements of the dict into the string list
+	PyObject* remaining_items = PyMapping_Items(obj);
+	for (int i = 0; i < PyMapping_Length(remaining_items); ++i)
+	{
+		PyObject* item = PyList_GetItem(remaining_items, i);
+		char* key = PyUnicode_AsUTF8(PyTuple_GetItem(item, 0));
+		PyObject* p_value = PyTuple_GetItem(item, 1);
+		PyObject* p_str = PyObject_Str(p_value);
+		Py_DECREF(p_value);
+
+		const int new_index = (*num_strings_p) - PyMapping_Length(obj) + i;
+
+		(*str_list_p)[new_index] = xstrdup_printf("%s=%s", key, PyUnicode_AsUTF8(p_str));
+	}
+	Py_DECREF(remaining_items);
 }
 
 void python_to_char_star_star(PyObject* obj, uint32_t* num_strings_p, char*** str_list_p)
