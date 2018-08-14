@@ -29,7 +29,6 @@
 #include "src/slurmctld/slurmctld.h"
 
 #include <stdbool.h>
-#include <time.h>
 
 const char plugin_name[]="Job submit Python plugin";
 const char plugin_type[] = "job_submit/python";
@@ -631,7 +630,6 @@ PyObject* load_script()
 
 extern int job_submit(struct job_descriptor *job_desc, uint32_t submit_uid, char **err_msg)
 {
-	float startTime = (float)clock()/CLOCKS_PER_SEC;
 	PyObject* pModule = load_script();
 	if (pModule != NULL)
 	{
@@ -686,8 +684,6 @@ extern int job_submit(struct job_descriptor *job_desc, uint32_t submit_uid, char
 	{
 		return SLURM_ERROR;
 	}
-	float endTime = (float)clock()/CLOCKS_PER_SEC;
-	info("job_submit_python: total time %f", endTime - startTime);
 	
 	return SLURM_SUCCESS;
 }
