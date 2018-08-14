@@ -247,7 +247,7 @@ PyObject* create_job_desc_dict(struct job_descriptor *job_desc)
 	insert_char_star(job_desc, pJobDesc, std_err);
 	insert_char_star(job_desc, pJobDesc, std_in);
 	insert_char_star(job_desc, pJobDesc, std_out);
-	//insert_uint64_t_star(job_desc, pJobDesc, );
+	//insert_uint64_t_star(job_desc, pJobDesc, tres_req_cnt);
 	insert_uint32_t(job_desc, pJobDesc, wait4switch);
 	insert_char_star(job_desc, pJobDesc, wckey);
 	insert_uint16_t(job_desc, pJobDesc, x11);
@@ -485,14 +485,6 @@ do { \
 
 void retrieve_job_desc_dict(struct job_descriptor *job_desc, PyObject* pJobDesc)
 {
-	/*retrieve_uint8_t(job_desc, pJobDesc, open_mode);
-	retrieve_char_star(job_desc, pJobDesc, partition);
-	retrieve_uint8_t(job_desc, pJobDesc, power_flags);
-	retrieve_char_star(job_desc, pJobDesc, work_dir);
-	retrieve_char_star(job_desc, pJobDesc, std_err);
-	retrieve_char_star(job_desc, pJobDesc, std_in);
-	retrieve_char_star(job_desc, pJobDesc, std_out);*/
-
 	retrieve_char_star(job_desc, pJobDesc, account);
 	retrieve_char_star(job_desc, pJobDesc, acctg_freq);
 	retrieve_char_star(job_desc, pJobDesc, admin_comment);
@@ -594,7 +586,7 @@ void retrieve_job_desc_dict(struct job_descriptor *job_desc, PyObject* pJobDesc)
 	retrieve_char_star(job_desc, pJobDesc, std_err);
 	retrieve_char_star(job_desc, pJobDesc, std_in);
 	retrieve_char_star(job_desc, pJobDesc, std_out);
-	//retrieve_uint64_t_star(job_desc, pJobDesc, );
+	//retrieve_uint64_t_star(job_desc, pJobDesc, tres_req_cnt);
 	retrieve_uint32_t(job_desc, pJobDesc, wait4switch);
 	retrieve_char_star(job_desc, pJobDesc, wckey);
 	retrieve_uint16_t(job_desc, pJobDesc, x11);
