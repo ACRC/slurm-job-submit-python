@@ -4,9 +4,10 @@ PYTHON_INCLUDE_DIR=/usr/include/python3.4m/
 PYTHON_LIBRARY=python3.4m
 
 SLURM_PLUGIN_INSTALL_DIR=/usr/lib64/slurm/
+SLURM_SCRIPT_DIR=/etc/slurm
 
 CC=gcc
-CFLAGS=-shared -fPIC -Wall -std=c99 -O3 -Wfatal-errors
+CFLAGS=-shared -fPIC -Wall -std=c99 -O3 -Wfatal-errors -DDEFAULT_SCRIPT_DIR=\"$(SLURM_SCRIPT_DIR)\"
 
 SOURCES=job_submit_python.c
 OUTPUT_LIBRARY=job_submit_python.so

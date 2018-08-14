@@ -38,14 +38,11 @@ int init(void)
 {
 	Py_Initialize();
 
-	// Append the script_directory to the Python path
-	char script_directory[] = "/usr/lib64/slurm/";
+	// Append the script directory to the Python path
 	PyObject* sysPath = PySys_GetObject((char*)"path");
-	PyObject* programName = PyUnicode_FromString(script_directory);
-	PyList_Append(sysPath, programName);
-	Py_DECREF(programName);
-
-	//verbose("job_submit_python: initialised");
+	PyObject* script_path = PyUnicode_FromString(DEFAULT_SCRIPT_DIR);
+	PyList_Append(sysPath, script_path);
+	Py_DECREF(script_path);
 
 	return SLURM_SUCCESS;
 }
