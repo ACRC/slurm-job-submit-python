@@ -626,8 +626,10 @@ extern int job_submit(struct job_descriptor *job_desc, uint32_t submit_uid, char
 		if (pFunc && PyCallable_Check(pFunc))
 		{
 			PyObject* pJobDesc = create_job_desc_dict(job_desc);
+			PyObject* p_submit_uid = PyLong_FromUnsignedLongLong(submit_uid);
 
-			PyObject* pRc = PyObject_CallFunctionObjArgs(pFunc, pJobDesc, NULL);
+			PyObject* pRc = PyObject_CallFunctionObjArgs(pFunc, pJobDesc, p_submit_uid, NULL);
+			Py_DECREF(p_submit_uid);
 
 			if (pRc != NULL)
 			{
@@ -637,6 +639,7 @@ extern int job_submit(struct job_descriptor *job_desc, uint32_t submit_uid, char
 
 				retrieve_job_desc_dict(job_desc, pJobDesc);
 				Py_DECREF(pJobDesc);
+
 
 				if (rc != SLURM_SUCCESS)
 				{
