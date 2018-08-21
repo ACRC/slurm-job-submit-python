@@ -1,0 +1,19 @@
+sudo: required
+
+language: python
+
+services:
+  - docker
+
+env:
+  - SLURM_GIT_TAG=slurm-17-11-9-2 SLURM_DOCKER_TAG=17.11.9
+
+before_install:
+  - docker pull giovtorres/docker-centos7-slurm:${SLURM_DOCKER_TAG}
+
+install:
+  - export ORIGIN=$(git remote get-url origin | sed 's/\//\\\//g')
+  - sed -e "s/{{SLURM_GIT_TAG}}/$SLURM_GIT_TAG/" -e "s/{{ORIGIN}}/$ORIGIN/" -e "s/{{TRAVIS_COMMIT}}/$TRAVIS_COMMIT/" tests/run_tests.sh > run_tests.sh.out
+
+script:
+  - docker run -v $(pwd)/run_tests.sh.out:/run_tests.sh -h ernie --rm "giovtorres/docker-centos7-slurm:${SLURM_DOCKER_TAG}" /bin/bash /run_tests.sh
