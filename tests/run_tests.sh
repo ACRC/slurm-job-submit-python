@@ -2,7 +2,7 @@
 
 cd ~
 
-git clone --branch $SLURM_GIT_TAG https://github.com/SchedMD/slurm.git
+git clone --depth 1 --branch $SLURM_GIT_TAG https://github.com/SchedMD/slurm.git
 cd slurm
 ./configure
 cd -
@@ -14,22 +14,38 @@ make install SLURM_SRC_DIR=/root/slurm
 echo "JobSubmitPlugins=python" >> /etc/slurm/slurm.conf
 supervisorctl restart slurmctld
 
-sleep 2 # to allow log to catch up
-LAST=$(tail -n1 /var/log/slurm/slurmctld.log)
+function run_test()
+{
+    echo "Running $1"
+    echo "############################"
+    echo ""
+    sleep 2 # to allow log to catch up
+    LAST=$(tail -n1 /var/log/slurm/slurmctld.log)
 
-cat << EOF > /etc/slurm/job_submit.py
-def job_submit(job_desc, submit_uid):
-    return 0
-EOF
+    bash $1
 
-sbatch <<EOF
-#! /bin/bash
-hostname
-EOF
+    RC=$?
 
-RC=$?
+    echo "/var/log/slurm/slurmctld.log:"
+    grep -A1000 -F "${LAST}" /var/log/slurm/slurmctld.log
 
-echo "/var/log/slurm/slurmctld.log:"
-grep -A1000 -F "${LAST}" /var/log/slurm/slurmctld.log
+    echo ""
+    return ${RC}
+}
 
-exit ${RC}
+PASSED=0
+FAILED=0
+for test in $(ls tests | grep -E '.*[[:digit:]]+\-.*\.sh')
+do
+    if run_test tests/$test; then
+        echo "Test passed"
+        ((PASSED++))
+    else
+        echo "Test failed"
+        ((FAILED++))
+    fi
+done
+
+echo "Passed: ${PASSED} Failed: ${FAILED}"
+
+exit ${FAILED}
