@@ -1,3 +1,6 @@
+.. image:: https://travis-ci.com/ACRC/slurm-job-submit-python.svg?branch=master
+    :target: https://travis-ci.com/ACRC/slurm-job-submit-python
+
 Python Job Submit plugin for Slurm
 ==================================
 
