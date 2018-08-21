@@ -1,14 +1,16 @@
 #! /bin/bash
 
 cd ~
-git clone --branch {{SLURM_GIT_TAG}} https://github.com/SchedMD/slurm.git
+
+git clone --branch $SLURM_GIT_TAG https://github.com/SchedMD/slurm.git
 cd slurm
 ./configure
 cd -
-git clone {{ORIGIN}}
+
+cp -r /mnt/slurm-job-submit-python .
 cd slurm-job-submit-python
-git checkout {{TRAVIS_COMMIT}}
 make install SLURM_SRC_DIR=/root/slurm
+
 echo "JobSubmitPlugins=python" >> /etc/slurm/slurm.conf
 supervisorctl restart slurmctld
 
