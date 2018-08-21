@@ -16,9 +16,9 @@ supervisorctl restart slurmctld
 
 function run_test()
 {
-    echo "Running $1"
-    echo "############################"
-    echo ""
+    echo -e "###############################"
+    echo -e "Running $1"
+    echo -e "###############################\n"
     sleep 2 # to allow log to catch up
     LAST=$(tail -n1 /var/log/slurm/slurmctld.log)
 
@@ -38,10 +38,10 @@ FAILED=0
 for test in $(ls tests | grep -E '.*[[:digit:]]+\-.*\.sh')
 do
     if run_test tests/$test; then
-        echo "Test passed"
+        echo -e "Test passed\n"
         ((PASSED++))
     else
-        echo "Test failed"
+        echo -e "Test failed\n"
         ((FAILED++))
     fi
 done
