@@ -1,7 +1,8 @@
-SLURM_INCLUDE_DIR=/usr/include/slurm
-SLURM_SRC_DIR=/mnt/shared/apps/slurm/BUILD/slurm-17.11.8
-PYTHON_INCLUDE_DIR=/usr/include/python3.4m/
-PYTHON_LIBRARY=python3.4m
+SLURM_INCLUDE_DIR ?= /usr/include/slurm
+SLURM_SRC_DIR ?= /mnt/shared/apps/slurm/BUILD/slurm-17.11.8
+PYTHON_CONFIG ?= python3-config
+PYTHON_INCLUDE_FLAGS=$(shell $(PYTHON_CONFIG) --includes)
+PYTHON_LIBRARY_FLAGS=$(shell $(PYTHON_CONFIG) --libs)
 
 SLURM_PLUGIN_INSTALL_DIR=/usr/lib64/slurm/
 SLURM_SCRIPT_DIR=/etc/slurm
@@ -15,7 +16,7 @@ OUTPUT_LIBRARY=job_submit_python.so
 all: $(SOURCES) $(OUTPUT_LIBRARY)
 
 $(OUTPUT_LIBRARY): $(SOURCES)
-	$(CC) $(SOURCES) -o $@ -I $(SLURM_INCLUDE_DIR) -I $(SLURM_SRC_DIR) -I $(PYTHON_INCLUDE_DIR) -l$(PYTHON_LIBRARY) $(CFLAGS)
+	$(CC) $(SOURCES) -o $@ -I $(SLURM_INCLUDE_DIR) -I $(SLURM_SRC_DIR) $(PYTHON_INCLUDE_FLAGS) $(PYTHON_LIBRARY_FLAGS) $(CFLAGS)
 
 clean:
 	rm $(OUTPUT_LIBRARY)
