@@ -23,3 +23,6 @@ clean:
 
 install: all
 	install $(OUTPUT_LIBRARY) $(SLURM_PLUGIN_INSTALL_DIR)
+
+test:
+	tests/run_local.sh
