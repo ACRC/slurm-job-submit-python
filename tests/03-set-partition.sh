@@ -15,7 +15,7 @@ hostname
 EOF
 )
 
-PARTITION=$(squeue --states all -j $JID --Format partition --noheader | xargs)
+PARTITION=$(squeue --states all -j "$JID" --Format partition --noheader | xargs)
 
 scancel -u root
 

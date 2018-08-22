@@ -1,8 +1,10 @@
 #! /bin/bash
+set -euo pipefail
+IFS=$'\n\t'
 
 cd ~
 
-git clone --depth 1 --branch $SLURM_GIT_TAG https://github.com/SchedMD/slurm.git
+git clone --depth 1 --branch "$SLURM_GIT_TAG" https://github.com/SchedMD/slurm.git
 cd slurm
 ./configure
 cd -
@@ -18,11 +20,11 @@ function run_test()
 {
     echo -e "###############################"
     echo -e "Running $1"
-    echo -e "###############################\n"
+    echo -e '###############################\n'
     sleep 2 # to allow log to catch up
     LAST=$(tail -n1 /var/log/slurm/slurmctld.log)
 
-    bash $1
+    bash "$1"
 
     RC=$?
 
@@ -37,17 +39,17 @@ PASSED=0
 FAILED=0
 for test in $(ls tests | grep -E '.*[[:digit:]]+\-.*\.sh')
 do
-    if run_test tests/$test; then
-        echo -e "\e[32mTest passed ✔\e[0m\n"
-        ((PASSED++))
+    if run_test "tests/$test"; then
+        echo -e '\e[32mTest passed ✔\e[0m\n'
+        PASSED=$((PASSED+1))
     else
-        echo -e "\e[31mTest failed ✖\e[0m\n"
-        ((FAILED++))
+        echo -e '\e[31mTest failed ✖\e[0m\n'
+        FAILED=$((FAILED+1))
     fi
 done
 
-if [[ $FAILED > 0 ]]; then echo -ne "\e[31m"; else echo -e "\e[32m"; fi
+if [[ $FAILED -gt 0 ]]; then echo -ne '\e[31m'; else echo -e '\e[32m'; fi
 echo "${PASSED} passed, ${FAILED} failed"
-echo -e "\e[0m"
+echo -e '\e[0m'
 
 exit ${FAILED}
