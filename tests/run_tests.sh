@@ -38,14 +38,16 @@ FAILED=0
 for test in $(ls tests | grep -E '.*[[:digit:]]+\-.*\.sh')
 do
     if run_test tests/$test; then
-        echo -e "Test passed\n"
+        echo -e "\e[32mTest passed ✔\e[0m\n"
         ((PASSED++))
     else
-        echo -e "Test failed\n"
+        echo -e "\e[31mTest failed ✖\e[0m\n"
         ((FAILED++))
     fi
 done
 
-echo "Passed: ${PASSED} Failed: ${FAILED}"
+if [[ $FAILED > 0 ]]; then echo -ne "\e[31m"; else echo -e "\e[32m"; fi
+echo "${PASSED} passed, ${FAILED} failed"
+echo -e "\e[0m"
 
 exit ${FAILED}
