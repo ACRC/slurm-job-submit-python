@@ -17,4 +17,6 @@ EOF
 
 PARTITION=$(squeue --states all -j $JID --Format partition --noheader | xargs)
 
+scancel -u root
+
 if [[ $PARTITION != "debug" ]]; then echo "Parition should be \"debug\" but is \"$PARTITION\""; exit 1; fi

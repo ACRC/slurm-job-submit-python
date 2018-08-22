@@ -11,3 +11,5 @@ sbatch <<EOF
 #! /bin/bash
 hostname
 EOF
+
+scancel -u root
