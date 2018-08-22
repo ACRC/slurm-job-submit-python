@@ -34,6 +34,8 @@ const char plugin_name[]="Job submit Python plugin";
 const char plugin_type[] = "job_submit/python";
 const uint32_t plugin_version = SLURM_VERSION_NUMBER;
 
+static pthread_mutex_t python_lock = PTHREAD_MUTEX_INITIALIZER;
+
 int init(void)
 {
 	Py_Initialize();
@@ -619,6 +621,8 @@ PyObject* load_script()
 
 extern int job_submit(struct job_descriptor *job_desc, uint32_t submit_uid, char **err_msg)
 {
+	slurm_mutex_lock(&python_lock);
+
 	PyObject* pModule = load_script();
 	if (pModule != NULL)
 	{
@@ -645,6 +649,7 @@ extern int job_submit(struct job_descriptor *job_desc, uint32_t submit_uid, char
 				{
 					Py_DECREF(pFunc);
 					Py_DECREF(pModule);
+					slurm_mutex_unlock(&python_lock);
 					return rc;
 				}
 			}
@@ -657,6 +662,7 @@ extern int job_submit(struct job_descriptor *job_desc, uint32_t submit_uid, char
 				error("job_submit_python: Call failed");
 				print_python_error();
 
+				slurm_mutex_unlock(&python_lock);
 				return SLURM_ERROR;
 			}
 		}
@@ -667,6 +673,7 @@ extern int job_submit(struct job_descriptor *job_desc, uint32_t submit_uid, char
 
 			Py_XDECREF(pFunc);
 			Py_DECREF(pModule);
+			slurm_mutex_unlock(&python_lock);
 			return SLURM_ERROR;
 		}
 		Py_XDECREF(pFunc);
@@ -674,14 +681,18 @@ extern int job_submit(struct job_descriptor *job_desc, uint32_t submit_uid, char
 	}
 	else
 	{
+		slurm_mutex_unlock(&python_lock);
 		return SLURM_ERROR;
 	}
 	
+	slurm_mutex_unlock(&python_lock);
 	return SLURM_SUCCESS;
 }
 
 extern int job_modify(struct job_descriptor *job_desc, struct job_record *job_ptr, uint32_t submit_uid)
 {
+	slurm_mutex_lock(&python_lock);
+	slurm_mutex_unlock(&python_lock);
 	return SLURM_SUCCESS;
 }
 
