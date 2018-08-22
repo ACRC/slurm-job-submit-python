@@ -11,6 +11,7 @@ cd -
 
 cp -r /mnt/slurm-job-submit-python .
 cd slurm-job-submit-python
+make clean
 make install SLURM_SRC_DIR=/root/slurm
 
 echo "JobSubmitPlugins=python" >> /etc/slurm/slurm.conf
