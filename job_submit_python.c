@@ -34,10 +34,47 @@ const char plugin_name[]="Job submit Python plugin";
 const char plugin_type[] = "job_submit/python";
 const uint32_t plugin_version = SLURM_VERSION_NUMBER;
 
+static char *user_msg = NULL;
+
 static pthread_mutex_t python_lock = PTHREAD_MUTEX_INITIALIZER;
+
+static PyObject* slurm_user_msg(PyObject *self, PyObject *arg)
+{
+	const char* msg = PyUnicode_AsUTF8(arg);
+	char *tmp = NULL;
+	if (user_msg) {
+		xstrfmtcat(tmp, "%s\n%s", user_msg, msg);
+		xfree(user_msg);
+		user_msg = tmp;
+		tmp = NULL;
+	} else {
+		user_msg = xstrdup(msg);
+	}
+	Py_RETURN_NONE;
+}
+
+static PyMethodDef SlurmMethods[] = {
+	{
+		"user_msg", slurm_user_msg, METH_O,
+		"docstring..."
+	},
+	{
+		NULL, NULL, 0, NULL
+	}
+};
+
+static PyModuleDef SlurmModule = {
+	PyModuleDef_HEAD_INIT, "slurm", NULL, -1, SlurmMethods, NULL, NULL, NULL, NULL
+};
+
+static PyObject* PyInit_slurm()
+{
+	return PyModule_Create(&SlurmModule);
+}
 
 int init(void)
 {
+	PyImport_AppendInittab("slurm", &PyInit_slurm);
 	Py_Initialize();
 
 	// Append the script directory to the Python path
@@ -278,7 +315,6 @@ void defragment_array(uint32_t num_strings, char** str_list)
 			{
 				if (str_list[back_pointer] != NULL)
 				{
-					info("Doing a swap");
 					str_list[empty_finder] = str_list[back_pointer];
 					str_list[back_pointer] = NULL;
 					break;
@@ -644,6 +680,10 @@ extern int job_submit(struct job_descriptor *job_desc, uint32_t submit_uid, char
 				retrieve_job_desc_dict(job_desc, pJobDesc);
 				Py_DECREF(pJobDesc);
 
+				if (user_msg) {
+					*err_msg = user_msg;
+					user_msg = NULL;
+				}
 
 				if (rc != SLURM_SUCCESS)
 				{
@@ -681,10 +721,11 @@ extern int job_submit(struct job_descriptor *job_desc, uint32_t submit_uid, char
 	}
 	else
 	{
+		print_python_error();
 		slurm_mutex_unlock(&python_lock);
 		return SLURM_ERROR;
 	}
-	
+
 	slurm_mutex_unlock(&python_lock);
 	return SLURM_SUCCESS;
 }
