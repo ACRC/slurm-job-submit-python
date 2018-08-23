@@ -25,14 +25,19 @@ function run_test()
     sleep 2 # to allow log to catch up
     LAST=$(tail -n1 /var/log/slurm/slurmctld.log)
 
-    bash "$1"
+    OUTPUT=$(bash "$1" 2>&1)
 
     RC=$?
 
-    echo "/var/log/slurm/slurmctld.log:"
-    grep -A1000 -F "${LAST}" /var/log/slurm/slurmctld.log
+    if [[ $RC -ne 0 ]]; then
+        echo "$OUTPUT"
+        echo ""
 
-    echo ""
+        echo "/var/log/slurm/slurmctld.log:"
+        grep -A1000 -F "${LAST}" /var/log/slurm/slurmctld.log
+        echo ""
+    fi
+
     return ${RC}
 }
 
