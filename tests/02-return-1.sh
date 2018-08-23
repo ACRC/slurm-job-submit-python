@@ -10,4 +10,6 @@ sbatch <<EOF
 hostname
 EOF
 
-if [[ "$?" -ne 1 ]]; then echo "sbatch returned wrong value"; exit 1; fi
+RC=$?
+
+if [[ "$RC" -ne 1 ]]; then echo "sbatch returned wrong value: $RC instead of 1"; exit 1; fi
