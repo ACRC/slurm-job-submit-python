@@ -43,9 +43,9 @@ function run_test()
 
 PASSED=0
 FAILED=0
-for test in $(ls tests | grep -E '.*[[:digit:]]+\-.*\.sh')
+for test in $(find tests -regex '.*/?[0-9]+-.+\.sh' | sort)
 do
-    if run_test "tests/$test"; then
+    if run_test "$test"; then
         echo -e '\e[32mTest passed ✔\e[0m\n'
         PASSED=$((PASSED+1))
     else
