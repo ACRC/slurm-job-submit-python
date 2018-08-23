@@ -53,10 +53,27 @@ static PyObject* slurm_user_msg(PyObject *self, PyObject *arg)
 	Py_RETURN_NONE;
 }
 
+static PyObject* slurm_info(PyObject *self, PyObject *arg)
+{
+	info("job_submit_python: %s", PyUnicode_AsUTF8(arg));
+	Py_RETURN_NONE;
+}
+
+static PyObject* slurm_error(PyObject *self, PyObject *arg)
+{
+	error("job_submit_python: %s", PyUnicode_AsUTF8(arg));
+	Py_RETURN_NONE;
+}
+
 static PyMethodDef SlurmMethods[] = {
 	{
-		"user_msg", slurm_user_msg, METH_O,
-		"docstring..."
+		"user_msg", slurm_user_msg, METH_O, ""
+	},
+	{
+		"info", slurm_info, METH_O, ""
+	},
+	{
+		"error", slurm_error, METH_O, ""
 	},
 	{
 		NULL, NULL, 0, NULL
