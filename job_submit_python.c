@@ -346,12 +346,14 @@ void python_dict_to_environment(PyObject* obj, uint32_t* num_strings_p, char*** 
 	if (obj == Py_None)
 	{
 		clear_char_star_star(num_strings_p, str_list_p);
-                return;
+			return;
 	}
 
-	if (!PyMapping_Check(obj))
+	if (!PyDict_Check(obj))
 	{
-		//TODO environment is not a mapping
+		const char* type = Py_TYPE(obj)->tp_name;
+		error("job_submit_python: Environment field expected a mapping, instead found a %s", type);
+		return;
 	}
 
 	uint32_t p_length = PyMapping_Length(obj);
