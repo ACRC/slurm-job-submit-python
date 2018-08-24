@@ -653,9 +653,7 @@ PyObject* load_script()
 	char script_name[] = "job_submit";
 
 	// Import the job_submit module
-	PyObject *pName = PyUnicode_FromString(script_name);
-	PyObject *pModuleInitial = PyImport_Import(pName);
-	Py_DECREF(pName);
+	PyObject *pModuleInitial = PyImport_ImportModule(script_name);
 
 	if (pModuleInitial != NULL)
 	{
