@@ -7,14 +7,16 @@ import slurm
 def job_submit(job_desc, submit_uid):
     slurm.user_msg("special error message")
     slurm.user_msg("error message two")
-    return 0
+    return 1
 EOF
 
+set +e
 MESSAGE=$(
 sbatch 2>&1 <<EOF
 #! /bin/bash
 EOF
 )
+set -e
 
 scancel -u root
 
