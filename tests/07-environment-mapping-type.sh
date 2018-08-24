@@ -5,7 +5,7 @@ IFS=$'\n\t'
 cat << EOF > /etc/slurm/job_submit.py
 import slurm
 def job_submit(job_desc, submit_uid):
-    job_desc['environment'] = "this is a string, not a dict"
+    job_desc.environment = "this is a string, not a dict"
     return 0
 EOF
 

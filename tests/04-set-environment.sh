@@ -4,7 +4,7 @@ IFS=$'\n\t'
 
 cat << EOF > /etc/slurm/job_submit.py
 def job_submit(job_desc, submit_uid):
-    job_desc["environment"]["NEW_ENV_VAR"] = "a new env var"
+    job_desc.environment["NEW_ENV_VAR"] = "a new env var"
     return 0
 EOF
 

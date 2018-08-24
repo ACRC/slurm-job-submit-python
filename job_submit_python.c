@@ -307,7 +307,15 @@ PyObject* create_job_desc_dict(struct job_descriptor *job_desc)
 	insert_char_star(job_desc, pJobDesc, x11_magic_cookie);
 	insert_uint16_t(job_desc, pJobDesc, x11_target_port);
 
-	return pJobDesc;
+	PyObject *p_types_module = PyImport_ImportModule("types");
+	PyObject* p_simplenamespace = PyObject_GetAttrString(p_types_module, "SimpleNamespace");
+	Py_DECREF(p_types_module);
+
+	PyObject* new_obj = PyObject_Call(p_simplenamespace, NULL, pJobDesc);
+	Py_DECREF(p_simplenamespace);
+	Py_DECREF(pJobDesc);
+
+	return new_obj;
 }
 
 void clear_char_star_star(uint32_t* num_strings_p, char*** str_list_p)
@@ -468,7 +476,7 @@ void python_to_char_star_star(PyObject* obj, uint32_t* num_strings_p, char*** st
 
 #define retrieve_char_star(job_desc, dict, name) \
 do { \
-	PyObject* o = PyDict_GetItemString(dict, #name); \
+	PyObject* o = PyObject_GetAttrString(dict, #name); \
 	if (o != NULL) { \
 		if (o == Py_None) { \
 			job_desc->name = NULL; \
@@ -484,7 +492,7 @@ do { \
 } while (0)
 #define retrieve_char_star_star(job_desc, dict, name, count) \
 do { \
-	PyObject* o = PyDict_GetItemString(dict, #name); \
+	PyObject* o = PyObject_GetAttrString(dict, #name); \
 	if (o != NULL) { \
 		python_to_char_star_star(o, &job_desc->count, &job_desc->name); \
 		PyDict_DelItemString(dict, #name); \
@@ -492,7 +500,7 @@ do { \
 } while (0)
 #define retrieve_environment_dict(job_desc, dict, name, count) \
 do { \
-	PyObject* o = PyDict_GetItemString(dict, #name); \
+	PyObject* o = PyObject_GetAttrString(dict, #name); \
 	if (o != NULL) { \
 		python_dict_to_environment(o, &job_desc->count, &job_desc->name); \
 		PyDict_DelItemString(dict, #name); \
@@ -500,7 +508,7 @@ do { \
 } while (0)
 #define retrieve_int(job_desc, dict, name, noval) \
 do { \
-	PyObject* o = PyDict_GetItemString(dict, #name); \
+	PyObject* o = PyObject_GetAttrString(dict, #name); \
 	if (o != NULL) { \
 		if (o == Py_None) { \
 			job_desc->name = noval; \
@@ -516,7 +524,7 @@ do { \
 #define retrieve_uint64_t(job_desc, dict, name) retrieve_int(job_desc, dict, name, NO_VAL64)
 #define retrieve_int_as_bool(job_desc, dict, name, noval) \
 do { \
-	PyObject* o = PyDict_GetItemString(dict, #name); \
+	PyObject* o = PyObject_GetAttrString(dict, #name); \
 	if (o != NULL) { \
 		if (o == Py_None) { \
 			job_desc->name = noval; \
@@ -530,7 +538,7 @@ do { \
 #define retrieve_uint16_t_as_bool(job_desc, dict, name) retrieve_int_as_bool(job_desc, dict, name, NO_VAL16)
 #define retrieve_time_t(job_desc, dict, name) \
 do { \
-	PyObject* o = PyDict_GetItemString(dict, #name); \
+	PyObject* o = PyObject_GetAttrString(dict, #name); \
 	if (o != NULL) { \
 		job_desc->name = PyLong_AsUnsignedLong(o); \
 		PyDict_DelItemString(dict, #name); \

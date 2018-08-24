@@ -4,7 +4,7 @@ IFS=$'\n\t'
 
 cat << EOF > /etc/slurm/job_submit.py
 def job_submit(job_desc, submit_uid):
-    job_desc["partition"] = "debug"
+    job_desc.partition = "debug"
     return 0
 EOF
 
