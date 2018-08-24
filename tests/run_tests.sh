@@ -16,12 +16,11 @@ make install SLURM_SRC_DIR=/root/slurm
 
 echo "JobSubmitPlugins=python" >> /etc/slurm/slurm.conf
 supervisorctl restart slurmctld
+echo ""
 
 function run_test()
 {
-    echo -e "###############################"
     echo -e "Running $1"
-    echo -e '###############################\n'
     sleep 2 # to allow log to catch up
     LAST=$(tail -n1 /var/log/slurm/slurmctld.log)
 
