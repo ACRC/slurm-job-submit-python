@@ -55,13 +55,17 @@ static PyObject* slurm_user_msg(PyObject *self, PyObject *arg)
 
 static PyObject* slurm_info(PyObject *self, PyObject *arg)
 {
-	info("job_submit_python: %s", PyUnicode_AsUTF8(arg));
+	PyObject* str = PyObject_Str(arg);
+	info("job_submit_python: %s", PyUnicode_AsUTF8(str));
+	Py_DECREF(str);
 	Py_RETURN_NONE;
 }
 
 static PyObject* slurm_error(PyObject *self, PyObject *arg)
 {
-	error("job_submit_python: %s", PyUnicode_AsUTF8(arg));
+	PyObject* str = PyObject_Str(arg);
+	error("job_submit_python: %s", PyUnicode_AsUTF8(str));
+	Py_DECREF(str);
 	Py_RETURN_NONE;
 }
 
