@@ -692,7 +692,15 @@ extern int job_submit(struct job_descriptor *job_desc, uint32_t submit_uid, char
 
 			if (pRc != NULL)
 			{
-				// TODO check the return type is an int
+				if(!PyLong_Check(pRc))
+				{
+					error("job_submit_python: return value of function must be an integer, not %s", Py_TYPE(pRc)->tp_name);
+					Py_DECREF(pRc);
+					Py_DECREF(pJobDesc);
+					Py_DECREF(pFunc);
+					Py_DECREF(pModule);
+					return SLURM_ERROR;
+				}
 				long rc = PyLong_AsLong(pRc);
 				Py_DECREF(pRc);
 
