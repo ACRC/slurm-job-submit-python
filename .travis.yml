@@ -5,5 +5,9 @@ language: minimal
 services:
   - docker
 
+env:
+  - SLURM_DOCKER_TAG=17.11.9  SLURM_GIT_TAG=slurm-17-11-9-2
+  - SLURM_DOCKER_TAG=17.02.11 SLURM_GIT_TAG=slurm-17-02-11-1
+
 script:
   - make test

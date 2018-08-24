@@ -1,7 +1,7 @@
 #! /bin/bash
 
-export SLURM_DOCKER_TAG=17.11.9
-export SLURM_GIT_TAG=slurm-17-11-9-2
+export SLURM_DOCKER_TAG=${SLURM_DOCKER_TAG-17.11.9}
+export SLURM_GIT_TAG=${SLURM_GIT_TAG-slurm-17-11-9-2}
 
 docker pull giovtorres/docker-centos7-slurm:${SLURM_DOCKER_TAG}
 
