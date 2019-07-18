@@ -1,6 +1,6 @@
 SLURM_INCLUDE_DIR ?= /usr/include/slurm
 SLURM_SRC_DIR ?= /mnt/shared/apps/slurm/BUILD/slurm-17.11.8
-PYTHON_CONFIG ?= python3-config
+PYTHON_CONFIG ?= python3.6-config
 PYTHON_INCLUDE_FLAGS=$(shell $(PYTHON_CONFIG) --includes)
 PYTHON_LIBRARY_FLAGS=$(shell $(PYTHON_CONFIG) --libs)
 
