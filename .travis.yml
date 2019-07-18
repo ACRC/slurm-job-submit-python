@@ -6,8 +6,10 @@ services:
   - docker
 
 env:
-  - SLURM_DOCKER_TAG=17.11.9  SLURM_GIT_TAG=slurm-17-11-9-2
   - SLURM_DOCKER_TAG=17.02.11 SLURM_GIT_TAG=slurm-17-02-11-1
+  - SLURM_DOCKER_TAG=17.11.13  SLURM_GIT_TAG=slurm-17-11-13-2
+  - SLURM_DOCKER_TAG=18.08.7  SLURM_GIT_TAG=slurm-18-08-7-1
+  - SLURM_DOCKER_TAG=19.05.0  SLURM_GIT_TAG=slurm-19-05-0-1
 
 script:
   - make test
