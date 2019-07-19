@@ -42,6 +42,10 @@ static char *user_msg = NULL;
 
 static pthread_mutex_t python_lock = PTHREAD_MUTEX_INITIALIZER;
 
+/*
+ * Function to register into Python namespace to allow the plugin writer to
+ * return information to the user running sbatch.
+ */
 static PyObject* slurm_user_msg(PyObject *self, PyObject *arg)
 {
 	const char* msg = PyUnicode_AsUTF8(arg);
@@ -57,6 +61,10 @@ static PyObject* slurm_user_msg(PyObject *self, PyObject *arg)
 	Py_RETURN_NONE;
 }
 
+/*
+ * Function to register into Python namespace to allow the plugin writer to
+ * write an info message into the log
+ */
 static PyObject* slurm_info(PyObject *self, PyObject *arg)
 {
 	PyObject* str = PyObject_Str(arg);
@@ -65,6 +73,10 @@ static PyObject* slurm_info(PyObject *self, PyObject *arg)
 	Py_RETURN_NONE;
 }
 
+/*
+ * Function to register into Python namespace to allow the plugin writer to
+ * write an error message into the log
+ */
 static PyObject* slurm_error(PyObject *self, PyObject *arg)
 {
 	PyObject* str = PyObject_Str(arg);
@@ -73,6 +85,9 @@ static PyObject* slurm_error(PyObject *self, PyObject *arg)
 	Py_RETURN_NONE;
 }
 
+/*
+ * Register table of Python function name to C function
+ */
 static PyMethodDef SlurmMethods[] = {
 	{
 		"user_msg", slurm_user_msg, METH_O, ""
@@ -88,17 +103,27 @@ static PyMethodDef SlurmMethods[] = {
 	}
 };
 
+/*
+ * Define the ``slurm`` module with the registered functions
+ */
 static PyModuleDef SlurmModule = {
 	PyModuleDef_HEAD_INIT, "slurm", NULL, -1, SlurmMethods, NULL, NULL, NULL, NULL
 };
 
+/*
+ * Create the ``slurm`` module
+ */
 static PyObject* PyInit_slurm()
 {
 	return PyModule_Create(&SlurmModule);
 }
 
+/*
+ * The plugin's entry point
+ */
 int init(void)
 {
+	// Create the slurm module and put it in the path
 	PyImport_AppendInittab("slurm", &PyInit_slurm);
 	Py_Initialize();
 
@@ -111,12 +136,18 @@ int init(void)
 	return SLURM_SUCCESS;
 }
 
+/*
+ * The plugin's cleanup function
+ */
 int fini(void)
 {
 	Py_Finalize();
 	return SLURM_SUCCESS;
 }
 
+/*
+ * If a Python error has occurred then print it and a traceback to the Slurm log
+ */
 void print_python_error()
 {
 	if (PyErr_Occurred())
@@ -125,13 +156,16 @@ void print_python_error()
 		PyErr_Fetch(&ptype, &pvalue, &ptraceback);
 		//PyErr_NormalizeException(&ptype, &pvalue, &ptraceback);
 
+		// Import the ``traceback`` module
 		PyObject *pTracebackModuleName = PyUnicode_FromString("traceback");
 		PyObject *pTracebackModule = PyImport_Import(pTracebackModuleName);
 		Py_DECREF(pTracebackModuleName);
 
+		// Get the ``traceback.format_tb`` function
 		PyObject* pFormatTbFn = PyObject_GetAttrString(pTracebackModule, "format_tb");
 		Py_DECREF(pTracebackModule);
 
+		// Get the formatted traceback
 		PyObject* pFormattedTb = PyObject_CallFunctionObjArgs(pFormatTbFn, ptraceback, NULL);
 		Py_DECREF(pFormatTbFn);
 		Py_XDECREF(ptraceback);
@@ -149,6 +183,9 @@ void print_python_error()
 	}
 }
 
+/*
+ * Insert ``obj`` into ``dict`` with key ``name``
+ */
 void insert_object(PyObject* dict, char* name, PyObject* obj)
 {
 	if (obj != NULL)
@@ -163,6 +200,9 @@ void insert_object(PyObject* dict, char* name, PyObject* obj)
 	}
 }
 
+/*
+ * Turn a ``char**`` into a list of strings
+ */
 PyObject* char_star_star_to_python(uint32_t num_strings, char** str_list)
 {
 	PyObject* list = PyList_New(num_strings);
@@ -176,6 +216,9 @@ PyObject* char_star_star_to_python(uint32_t num_strings, char** str_list)
 	return list;
 }
 
+/*
+ * Turn a list of ``a=b`` strings into a dict
+ */
 PyObject* char_star_star_to_python_dict(uint32_t num_strings, char** str_list)
 {
 	PyObject* dict = PyDict_New();
@@ -202,6 +245,9 @@ PyObject* char_star_star_to_python_dict(uint32_t num_strings, char** str_list)
 #define insert_uint8_t_to_bool(job_desc, dict, name) do { if(job_desc->name != NO_VAL8) {insert_object(dict, #name, PyBool_FromLong(job_desc->name));} else insert_object(dict, #name, Py_None); } while (0)
 #define insert_uint16_t_to_bool(job_desc, dict, name) do { if(job_desc->name != NO_VAL16) {insert_object(dict, #name, PyBool_FromLong(job_desc->name));} else insert_object(dict, #name, Py_None); } while (0)
 
+/*
+ * Return a namespace object representing the ``job_descriptor`` struct
+ */
 PyObject* create_job_desc_dict(struct job_descriptor *job_desc)
 {
 	PyObject* pJobDesc = PyDict_New();
@@ -383,6 +429,10 @@ PyObject* create_job_desc_dict(struct job_descriptor *job_desc)
 	return new_obj;
 }
 
+/*
+ * Free the memory associated with every string in a char* array and the array
+ * itself.
+ */
 void clear_char_star_star(uint32_t* num_strings_p, char*** str_list_p)
 {
 	for (int i = 0; i < *num_strings_p; ++i)
@@ -394,7 +444,9 @@ void clear_char_star_star(uint32_t* num_strings_p, char*** str_list_p)
 }
 
 
-// Given an array of strings, move any NULL strings to the end
+/*
+ * Given an array of strings, move any NULL strings to the end
+ */
 void defragment_array(uint32_t num_strings, char** str_list)
 {
 	for (int empty_finder = 0; empty_finder < num_strings; ++empty_finder)
@@ -503,27 +555,31 @@ void python_to_char_star_star(PyObject* obj, uint32_t* num_strings_p, char*** st
 
 	int python_count = PySequence_Fast_GET_SIZE(list);
 
+	// If the list is empty, set the array to NULL
 	if (python_count == 0)
 	{
 		clear_char_star_star(num_strings_p, str_list_p);
 		return;
 	}
 
+	// If some entries have been removed the we should clear the memory that we will not need
 	if (python_count < (*num_strings_p))
 	{
-		// If some entries have been removed the we should clear the memory that we will not need
 		for (int i = python_count; i < *num_strings_p; ++i)
 		{
 			xfree((*str_list_p)[i]);
 		}
 	}
 
+	// If there are more Pytohn strings than entries in the array then we
+	// must make the array larger to the correct amount
 	if (python_count != (*num_strings_p))
 	{
 		*num_strings_p = python_count;
 		*str_list_p = xrealloc(*str_list_p, sizeof(char*) * (*num_strings_p));
 	}
 
+	// Fill the array with the values from the list
 	for (int i = 0; i < python_count; ++i)
 	{
 		PyObject* obj = PySequence_Fast_GET_ITEM(list, i);
@@ -610,6 +666,9 @@ do { \
 	} \
 } while (0)
 
+/*
+ * Turn a Python namespace object into a ``job_descriptor`` struct
+ */
 void retrieve_job_desc_dict(struct job_descriptor *job_desc, PyObject* pJobDesc)
 {
 	retrieve_char_star(job_desc, pJobDesc, account);
@@ -777,6 +836,9 @@ void retrieve_job_desc_dict(struct job_descriptor *job_desc, PyObject* pJobDesc)
 	#endif
 }
 
+/*
+ * Load the Python job-submit script and return it
+ */
 PyObject* load_script()
 {
 	char script_name[] = "job_submit";
@@ -801,6 +863,9 @@ PyObject* load_script()
 	return pModuleInitial;
 }
 
+/*
+ * Load and run the job submit script and call the ``job_submit`` function
+ */
 extern int job_submit(struct job_descriptor *job_desc, uint32_t submit_uid, char **err_msg)
 {
 	slurm_mutex_lock(&python_lock);
