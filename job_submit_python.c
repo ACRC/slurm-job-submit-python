@@ -158,7 +158,7 @@ void insert_object(PyObject* dict, char* name, PyObject* obj)
 	}
 	else
 	{
-		error("Could not convert job description entry %s", name);
+		error("job_submit_python: Could not convert job description entry %s", name);
 		print_python_error();
 	}
 }
@@ -862,7 +862,7 @@ extern int job_submit(struct job_descriptor *job_desc, uint32_t submit_uid, char
 		}
 		else
 		{
-			error("Cannot find function \"%s\"", "job_submit");
+			error("job_submit_python: Cannot find function \"%s\"", "job_submit");
 			print_python_error();
 
 			Py_XDECREF(pFunc);
