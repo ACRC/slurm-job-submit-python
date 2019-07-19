@@ -261,18 +261,12 @@ PyObject* create_job_desc_dict(struct job_descriptor *job_desc)
 	insert_char_star_star(job_desc, pJobDesc, argv, argc);
 	insert_char_star(job_desc, pJobDesc, array_inx);
 	//insert_char_star(job_desc, pJobDesc, array_bitmap); // void*
-	#if SLURM_VERSION_NUMBER >= SLURM_VERSION_NUM(18,8,0)
-	insert_char_star(job_desc, pJobDesc, batch_features);
-	#endif
 	insert_time_t(job_desc, pJobDesc, begin_time);
 	insert_uint32_t(job_desc, pJobDesc, bitflags);
 	insert_char_star(job_desc, pJobDesc, burst_buffer);
 	insert_uint16_t(job_desc, pJobDesc, ckpt_interval);
 	insert_char_star(job_desc, pJobDesc, ckpt_dir);
 	insert_char_star(job_desc, pJobDesc, clusters);
-	#if SLURM_VERSION_NUMBER >= SLURM_VERSION_NUM(17,11,0)
-	insert_char_star(job_desc, pJobDesc, cluster_features);
-	#endif
 	insert_char_star(job_desc, pJobDesc, comment);
 	insert_uint16_t_to_bool(job_desc, pJobDesc, contiguous);
 	insert_uint16_t(job_desc, pJobDesc, core_spec);
@@ -281,33 +275,14 @@ PyObject* create_job_desc_dict(struct job_descriptor *job_desc)
 	insert_uint32_t(job_desc, pJobDesc, cpu_freq_min);
 	insert_uint32_t(job_desc, pJobDesc, cpu_freq_max);
 	insert_uint32_t(job_desc, pJobDesc, cpu_freq_gov);
-	#if SLURM_VERSION_NUMBER >= SLURM_VERSION_NUM(18,8,0)
-	insert_char_star(job_desc, pJobDesc, cpus_per_tres);
-	#endif
 	insert_time_t(job_desc, pJobDesc, deadline);
 	insert_uint32_t(job_desc, pJobDesc, delay_boot);
 	insert_char_star(job_desc, pJobDesc, dependency);
 	insert_time_t(job_desc, pJobDesc, end_time);
 	insert_environment_dict(job_desc, pJobDesc, environment, env_size);
-	#if SLURM_VERSION_NUMBER >= SLURM_VERSION_NUM(17,11,0)
-	insert_char_star(job_desc, pJobDesc, extra);
-	#endif
 	insert_char_star(job_desc, pJobDesc, exc_nodes);
 	insert_char_star(job_desc, pJobDesc, features);
-	#if SLURM_VERSION_NUMBER >= SLURM_VERSION_NUM(17,2,0) && SLURM_VERSION_NUMBER < SLURM_VERSION_NUM(17,11,0)
-	insert_uint64_t(job_desc, pJobDesc, fed_siblings);
-	#elif SLURM_VERSION_NUMBER >= SLURM_VERSION_NUM(17,11,0)
-	insert_uint64_t(job_desc, pJobDesc, fed_siblings_active);
-	insert_uint64_t(job_desc, pJobDesc, fed_siblings_viable);
-	#endif
-
-	#if SLURM_VERSION_NUMBER < SLURM_VERSION_NUM(18,8,0)
-	insert_char_star(job_desc, pJobDesc, gres);
-	#endif
 	insert_uint32_t(job_desc, pJobDesc, group_id);
-	#if SLURM_VERSION_NUMBER >= SLURM_VERSION_NUM(17,2,0) && SLURM_VERSION_NUMBER < SLURM_VERSION_NUM(17,11,0)
-	insert_uint32_t(job_desc, pJobDesc, group_number);
-	#endif
 	insert_uint16_t_to_bool(job_desc, pJobDesc, immediate);
 	insert_uint32_t(job_desc, pJobDesc, job_id);
 	insert_char_star(job_desc, pJobDesc, job_id_str);
@@ -318,31 +293,14 @@ PyObject* create_job_desc_dict(struct job_descriptor *job_desc)
 	insert_char_star(job_desc, pJobDesc, mcs_label);
 	insert_char_star(job_desc, pJobDesc, mem_bind);
 	insert_uint16_t(job_desc, pJobDesc, mem_bind_type);
-	#if SLURM_VERSION_NUMBER >= SLURM_VERSION_NUM(18,8,0)
-	insert_char_star(job_desc, pJobDesc, mem_per_tres);
-	#endif
 	insert_char_star(job_desc, pJobDesc, name);
 	insert_char_star(job_desc, pJobDesc, network);
 	insert_uint32_t(job_desc, pJobDesc, nice);
-	#if SLURM_VERSION_NUMBER >= SLURM_VERSION_NUM(17,2,0) && SLURM_VERSION_NUMBER < SLURM_VERSION_NUM(17,11,0)
-	insert_uint32_t(job_desc, pJobDesc, numpack);
-	#endif
 	insert_uint32_t(job_desc, pJobDesc, num_tasks);
 	insert_uint8_t(job_desc, pJobDesc, open_mode);
-	#if SLURM_VERSION_NUMBER >= SLURM_VERSION_NUM(17,11,0)
-	insert_char_star(job_desc, pJobDesc, origin_cluster);
-	#endif
 	insert_uint16_t(job_desc, pJobDesc, other_port);
 	insert_uint8_t_to_bool(job_desc, pJobDesc, overcommit);
-	#if SLURM_VERSION_NUMBER >= SLURM_VERSION_NUM(17,2,0) && SLURM_VERSION_NUMBER < SLURM_VERSION_NUM(17,11,0)
-	insert_uint32_t(job_desc, pJobDesc, pack_leader);
-	#elif SLURM_VERSION_NUMBER >= SLURM_VERSION_NUM(17,11,0)
-	insert_uint32_t(job_desc, pJobDesc, pack_job_offset);
-	#endif
 	insert_char_star(job_desc, pJobDesc, partition);
-	#if SLURM_VERSION_NUMBER >= SLURM_VERSION_NUM(17,2,0) && SLURM_VERSION_NUMBER < SLURM_VERSION_NUM(17,11,0)
-	insert_environment_dict(job_desc, pJobDesc, pelog_env, pelog_env_size);
-	#endif
 	insert_uint16_t(job_desc, pJobDesc, plane_size);
 	insert_uint8_t(job_desc, pJobDesc, power_flags);
 	insert_uint32_t(job_desc, pJobDesc, priority);
@@ -351,32 +309,15 @@ PyObject* create_job_desc_dict(struct job_descriptor *job_desc)
 	insert_uint16_t_to_bool(job_desc, pJobDesc, reboot);
 	insert_char_star(job_desc, pJobDesc, resp_host);
 	insert_uint16_t(job_desc, pJobDesc, restart_cnt);
-	#if SLURM_VERSION_NUMBER >= SLURM_VERSION_NUM(17,2,0) && SLURM_VERSION_NUMBER < SLURM_VERSION_NUM(17,11,0)
-	insert_uint8_t(job_desc, pJobDesc, resv_port);
-	#endif
 	insert_char_star(job_desc, pJobDesc, req_nodes);
 	insert_uint16_t_to_bool(job_desc, pJobDesc, requeue);
 	insert_char_star(job_desc, pJobDesc, reservation);
 	insert_char_star(job_desc, pJobDesc, script);
-	#if SLURM_VERSION_NUMBER >= SLURM_VERSION_NUM(18,8,0)
-	//insert_void_star(job_desc, pJobDesc, script_buf);  // void*
-	#endif
 	insert_uint16_t(job_desc, pJobDesc, shared);
 	insert_char_star_star(job_desc, pJobDesc, spank_job_env, spank_job_env_size);
-	#if SLURM_VERSION_NUMBER >= SLURM_VERSION_NUM(19,5,0)
-	insert_uint32_t(job_desc, pJobDesc, site_factor);
-	#endif
 	insert_uint32_t(job_desc, pJobDesc, task_dist);
 	insert_uint32_t(job_desc, pJobDesc, time_limit);
 	insert_uint32_t(job_desc, pJobDesc, time_min);
-	#if SLURM_VERSION_NUMBER >= SLURM_VERSION_NUM(18,8,0)
-	insert_char_star(job_desc, pJobDesc, tres_bind);
-	insert_char_star(job_desc, pJobDesc, tres_freq);
-	insert_char_star(job_desc, pJobDesc, tres_per_job);
-	insert_char_star(job_desc, pJobDesc, tres_per_node);
-	insert_char_star(job_desc, pJobDesc, tres_per_socket);
-	insert_char_star(job_desc, pJobDesc, tres_per_task);
-	#endif
 	insert_uint32_t(job_desc, pJobDesc, user_id);
 	insert_uint16_t_to_bool(job_desc, pJobDesc, wait_all_nodes);
 	insert_uint16_t(job_desc, pJobDesc, warn_flags);
@@ -408,12 +349,45 @@ PyObject* create_job_desc_dict(struct job_descriptor *job_desc)
 	//insert_uint64_t_star(job_desc, pJobDesc, tres_req_cnt);
 	insert_uint32_t(job_desc, pJobDesc, wait4switch);
 	insert_char_star(job_desc, pJobDesc, wckey);
+
+	#if SLURM_VERSION_NUMBER >= SLURM_VERSION_NUM(17,2,0) && SLURM_VERSION_NUMBER < SLURM_VERSION_NUM(17,11,0)
+	insert_uint64_t(job_desc, pJobDesc, fed_siblings);
+	insert_uint32_t(job_desc, pJobDesc, group_number);
+	insert_uint32_t(job_desc, pJobDesc, numpack);
+	insert_uint32_t(job_desc, pJobDesc, pack_leader);
+	insert_environment_dict(job_desc, pJobDesc, pelog_env, pelog_env_size);
+	insert_uint8_t(job_desc, pJobDesc, resv_port);
+	#endif
 	#if SLURM_VERSION_NUMBER >= SLURM_VERSION_NUM(17,11,0)
+	insert_char_star(job_desc, pJobDesc, cluster_features);
+	insert_char_star(job_desc, pJobDesc, extra);
+	insert_uint64_t(job_desc, pJobDesc, fed_siblings_active);
+	insert_uint64_t(job_desc, pJobDesc, fed_siblings_viable);
+	insert_char_star(job_desc, pJobDesc, origin_cluster);
+	insert_uint32_t(job_desc, pJobDesc, pack_job_offset);
 	insert_uint16_t(job_desc, pJobDesc, x11);
 	insert_char_star(job_desc, pJobDesc, x11_magic_cookie);
 	insert_uint16_t(job_desc, pJobDesc, x11_target_port);
 	#endif
+
+	#if SLURM_VERSION_NUMBER < SLURM_VERSION_NUM(18,8,0)
+	insert_char_star(job_desc, pJobDesc, gres);
+	#endif
+	#if SLURM_VERSION_NUMBER >= SLURM_VERSION_NUM(18,8,0)
+	insert_char_star(job_desc, pJobDesc, batch_features);
+	insert_char_star(job_desc, pJobDesc, cpus_per_tres);
+	insert_char_star(job_desc, pJobDesc, mem_per_tres);
+	//insert_void_star(job_desc, pJobDesc, script_buf);  // void*
+	insert_char_star(job_desc, pJobDesc, tres_bind);
+	insert_char_star(job_desc, pJobDesc, tres_freq);
+	insert_char_star(job_desc, pJobDesc, tres_per_job);
+	insert_char_star(job_desc, pJobDesc, tres_per_node);
+	insert_char_star(job_desc, pJobDesc, tres_per_socket);
+	insert_char_star(job_desc, pJobDesc, tres_per_task);
+	#endif
+
 	#if SLURM_VERSION_NUMBER >= SLURM_VERSION_NUM(19,5,0)
+	insert_uint32_t(job_desc, pJobDesc, site_factor);
 	insert_char_star(job_desc, pJobDesc, x11_target);
 	#endif
 
@@ -679,18 +653,12 @@ void retrieve_job_desc_dict(struct job_descriptor *job_desc, PyObject* pJobDesc)
 	retrieve_char_star_star(job_desc, pJobDesc, argv, argc);
 	retrieve_char_star(job_desc, pJobDesc, array_inx);
 	//retrieve_char_star(job_desc, pJobDesc, array_bitmap); // void*
-	#if SLURM_VERSION_NUMBER >= SLURM_VERSION_NUM(18,8,0)
-	retrieve_char_star(job_desc, pJobDesc, batch_features);
-	#endif
 	retrieve_time_t(job_desc, pJobDesc, begin_time);
 	retrieve_uint32_t(job_desc, pJobDesc, bitflags);
 	retrieve_char_star(job_desc, pJobDesc, burst_buffer);
 	retrieve_uint16_t(job_desc, pJobDesc, ckpt_interval);
 	retrieve_char_star(job_desc, pJobDesc, ckpt_dir);
 	retrieve_char_star(job_desc, pJobDesc, clusters);
-	#if SLURM_VERSION_NUMBER >= SLURM_VERSION_NUM(17,11,0)
-	retrieve_char_star(job_desc, pJobDesc, cluster_features);
-	#endif
 	retrieve_char_star(job_desc, pJobDesc, comment);
 	retrieve_uint16_t_as_bool(job_desc, pJobDesc, contiguous);
 	retrieve_uint16_t(job_desc, pJobDesc, core_spec);
@@ -699,32 +667,14 @@ void retrieve_job_desc_dict(struct job_descriptor *job_desc, PyObject* pJobDesc)
 	retrieve_uint32_t(job_desc, pJobDesc, cpu_freq_min);
 	retrieve_uint32_t(job_desc, pJobDesc, cpu_freq_max);
 	retrieve_uint32_t(job_desc, pJobDesc, cpu_freq_gov);
-	#if SLURM_VERSION_NUMBER >= SLURM_VERSION_NUM(18,8,0)
-	retrieve_char_star(job_desc, pJobDesc, cpus_per_tres);
-	#endif
 	retrieve_time_t(job_desc, pJobDesc, deadline);
 	retrieve_uint32_t(job_desc, pJobDesc, delay_boot);
 	retrieve_char_star(job_desc, pJobDesc, dependency);
 	retrieve_time_t(job_desc, pJobDesc, end_time);
 	retrieve_environment_dict(job_desc, pJobDesc, environment, env_size);
-	#if SLURM_VERSION_NUMBER >= SLURM_VERSION_NUM(17,11,0)
-	retrieve_char_star(job_desc, pJobDesc, extra);
-	#endif
 	retrieve_char_star(job_desc, pJobDesc, exc_nodes);
 	retrieve_char_star(job_desc, pJobDesc, features);
-	#if SLURM_VERSION_NUMBER >= SLURM_VERSION_NUM(17,2,0) && SLURM_VERSION_NUMBER < SLURM_VERSION_NUM(17,11,0)
-	retrieve_uint64_t(job_desc, pJobDesc, fed_siblings);
-	#elif SLURM_VERSION_NUMBER >= SLURM_VERSION_NUM(17,11,0)
-	retrieve_uint64_t(job_desc, pJobDesc, fed_siblings_active);
-	retrieve_uint64_t(job_desc, pJobDesc, fed_siblings_viable);
-	#endif
-	#if SLURM_VERSION_NUMBER < SLURM_VERSION_NUM(18,8,0)
-	retrieve_char_star(job_desc, pJobDesc, gres);
-	#endif
 	retrieve_uint32_t(job_desc, pJobDesc, group_id);
-	#if SLURM_VERSION_NUMBER >= SLURM_VERSION_NUM(17,2,0) && SLURM_VERSION_NUMBER < SLURM_VERSION_NUM(17,11,0)
-	retrieve_uint32_t(job_desc, pJobDesc, group_number);
-	#endif
 	retrieve_uint16_t_as_bool(job_desc, pJobDesc, immediate);
 	retrieve_uint32_t(job_desc, pJobDesc, job_id);
 	retrieve_char_star(job_desc, pJobDesc, job_id_str);
@@ -735,31 +685,14 @@ void retrieve_job_desc_dict(struct job_descriptor *job_desc, PyObject* pJobDesc)
 	retrieve_char_star(job_desc, pJobDesc, mcs_label);
 	retrieve_char_star(job_desc, pJobDesc, mem_bind);
 	retrieve_uint16_t(job_desc, pJobDesc, mem_bind_type);
-	#if SLURM_VERSION_NUMBER >= SLURM_VERSION_NUM(18,8,0)
-	retrieve_char_star(job_desc, pJobDesc, mem_per_tres);
-	#endif
 	retrieve_char_star(job_desc, pJobDesc, name);
 	retrieve_char_star(job_desc, pJobDesc, network);
 	retrieve_uint32_t(job_desc, pJobDesc, nice);
-	#if SLURM_VERSION_NUMBER >= SLURM_VERSION_NUM(17,2,0) && SLURM_VERSION_NUMBER < SLURM_VERSION_NUM(17,11,0)
-	retrieve_uint32_t(job_desc, pJobDesc, numpack);
-	#endif
 	retrieve_uint32_t(job_desc, pJobDesc, num_tasks);
 	retrieve_uint8_t(job_desc, pJobDesc, open_mode);
-	#if SLURM_VERSION_NUMBER >= SLURM_VERSION_NUM(17,11,0)
-	retrieve_char_star(job_desc, pJobDesc, origin_cluster);
-	#endif
 	retrieve_uint16_t(job_desc, pJobDesc, other_port);
 	retrieve_uint8_t_as_bool(job_desc, pJobDesc, overcommit);
-	#if SLURM_VERSION_NUMBER >= SLURM_VERSION_NUM(17,2,0) && SLURM_VERSION_NUMBER < SLURM_VERSION_NUM(17,11,0)
-	retrieve_uint32_t(job_desc, pJobDesc, pack_leader);
-	#elif SLURM_VERSION_NUMBER >= SLURM_VERSION_NUM(17,11,0)
-	retrieve_uint32_t(job_desc, pJobDesc, pack_job_offset);
-	#endif
 	retrieve_char_star(job_desc, pJobDesc, partition);
-	#if SLURM_VERSION_NUMBER >= SLURM_VERSION_NUM(17,2,0) && SLURM_VERSION_NUMBER < SLURM_VERSION_NUM(17,11,0)
-	retrieve_environment_dict(job_desc, pJobDesc, pelog_env, pelog_env_size);
-	#endif
 	retrieve_uint16_t(job_desc, pJobDesc, plane_size);
 	retrieve_uint8_t(job_desc, pJobDesc, power_flags);
 	retrieve_uint32_t(job_desc, pJobDesc, priority);
@@ -768,32 +701,15 @@ void retrieve_job_desc_dict(struct job_descriptor *job_desc, PyObject* pJobDesc)
 	retrieve_uint16_t_as_bool(job_desc, pJobDesc, reboot);
 	retrieve_char_star(job_desc, pJobDesc, resp_host);
 	retrieve_uint16_t(job_desc, pJobDesc, restart_cnt);
-	#if SLURM_VERSION_NUMBER >= SLURM_VERSION_NUM(17,2,0) && SLURM_VERSION_NUMBER < SLURM_VERSION_NUM(17,11,0)
-	retrieve_uint8_t(job_desc, pJobDesc, resv_port);
-	#endif
 	retrieve_char_star(job_desc, pJobDesc, req_nodes);
 	retrieve_uint16_t_as_bool(job_desc, pJobDesc, requeue);
 	retrieve_char_star(job_desc, pJobDesc, reservation);
 	retrieve_char_star(job_desc, pJobDesc, script);
-	#if SLURM_VERSION_NUMBER >= SLURM_VERSION_NUM(18,8,0)
-	//retrieve_void_star(job_desc, pJobDesc, script_buf);  // void*
-	#endif
 	retrieve_uint16_t(job_desc, pJobDesc, shared);
 	retrieve_char_star_star(job_desc, pJobDesc, spank_job_env, spank_job_env_size);
-	#if SLURM_VERSION_NUMBER >= SLURM_VERSION_NUM(19,5,0)
-	retrieve_uint32_t(job_desc, pJobDesc, site_factor);
-	#endif
 	retrieve_uint32_t(job_desc, pJobDesc, task_dist);
 	retrieve_uint32_t(job_desc, pJobDesc, time_limit);
 	retrieve_uint32_t(job_desc, pJobDesc, time_min);
-	#if SLURM_VERSION_NUMBER >= SLURM_VERSION_NUM(18,8,0)
-	retrieve_char_star(job_desc, pJobDesc, tres_bind);
-	retrieve_char_star(job_desc, pJobDesc, tres_freq);
-	retrieve_char_star(job_desc, pJobDesc, tres_per_job);
-	retrieve_char_star(job_desc, pJobDesc, tres_per_node);
-	retrieve_char_star(job_desc, pJobDesc, tres_per_socket);
-	retrieve_char_star(job_desc, pJobDesc, tres_per_task);
-	#endif
 	retrieve_uint32_t(job_desc, pJobDesc, user_id);
 	retrieve_uint16_t_as_bool(job_desc, pJobDesc, wait_all_nodes);
 	retrieve_uint16_t(job_desc, pJobDesc, warn_flags);
@@ -825,12 +741,45 @@ void retrieve_job_desc_dict(struct job_descriptor *job_desc, PyObject* pJobDesc)
 	//retrieve_uint64_t_star(job_desc, pJobDesc, tres_req_cnt);
 	retrieve_uint32_t(job_desc, pJobDesc, wait4switch);
 	retrieve_char_star(job_desc, pJobDesc, wckey);
+
+	#if SLURM_VERSION_NUMBER >= SLURM_VERSION_NUM(17,2,0) && SLURM_VERSION_NUMBER < SLURM_VERSION_NUM(17,11,0)
+	retrieve_uint64_t(job_desc, pJobDesc, fed_siblings);
+	retrieve_uint32_t(job_desc, pJobDesc, group_number);
+	retrieve_uint32_t(job_desc, pJobDesc, numpack);
+	retrieve_uint32_t(job_desc, pJobDesc, pack_leader);
+	retrieve_environment_dict(job_desc, pJobDesc, pelog_env, pelog_env_size);
+	retrieve_uint8_t(job_desc, pJobDesc, resv_port);
+	#endif
 	#if SLURM_VERSION_NUMBER >= SLURM_VERSION_NUM(17,11,0)
+	retrieve_char_star(job_desc, pJobDesc, cluster_features);
+	retrieve_char_star(job_desc, pJobDesc, extra);
+	retrieve_uint64_t(job_desc, pJobDesc, fed_siblings_active);
+	retrieve_uint64_t(job_desc, pJobDesc, fed_siblings_viable);
+	retrieve_char_star(job_desc, pJobDesc, origin_cluster);
+	retrieve_uint32_t(job_desc, pJobDesc, pack_job_offset);
 	retrieve_uint16_t(job_desc, pJobDesc, x11);
 	retrieve_char_star(job_desc, pJobDesc, x11_magic_cookie);
 	retrieve_uint16_t(job_desc, pJobDesc, x11_target_port);
 	#endif
+
+	#if SLURM_VERSION_NUMBER < SLURM_VERSION_NUM(18,8,0)
+	retrieve_char_star(job_desc, pJobDesc, gres);
+	#endif
+	#if SLURM_VERSION_NUMBER >= SLURM_VERSION_NUM(18,8,0)
+	retrieve_char_star(job_desc, pJobDesc, batch_features);
+	retrieve_char_star(job_desc, pJobDesc, cpus_per_tres);
+	retrieve_char_star(job_desc, pJobDesc, mem_per_tres);
+	//retrieve_void_star(job_desc, pJobDesc, script_buf);  // void*
+	retrieve_char_star(job_desc, pJobDesc, tres_bind);
+	retrieve_char_star(job_desc, pJobDesc, tres_freq);
+	retrieve_char_star(job_desc, pJobDesc, tres_per_job);
+	retrieve_char_star(job_desc, pJobDesc, tres_per_node);
+	retrieve_char_star(job_desc, pJobDesc, tres_per_socket);
+	retrieve_char_star(job_desc, pJobDesc, tres_per_task);
+	#endif
+
 	#if SLURM_VERSION_NUMBER >= SLURM_VERSION_NUM(19,5,0)
+	retrieve_uint32_t(job_desc, pJobDesc, site_factor);
 	retrieve_char_star(job_desc, pJobDesc, x11_target);
 	#endif
 }
