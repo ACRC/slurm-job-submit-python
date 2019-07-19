@@ -289,7 +289,6 @@ PyObject* create_job_desc_dict(struct job_descriptor *job_desc)
 	insert_char_star(job_desc, pJobDesc, dependency);
 	insert_time_t(job_desc, pJobDesc, end_time);
 	insert_environment_dict(job_desc, pJobDesc, environment, env_size);
-	insert_uint32_t(job_desc, pJobDesc, env_size);
 	#if SLURM_VERSION_NUMBER >= SLURM_VERSION_NUM(17,11,0)
 	insert_char_star(job_desc, pJobDesc, extra);
 	#endif
